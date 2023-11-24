@@ -1,5 +1,7 @@
 # MarkdownBlazor
 
+> Very early beta stage; use with care/fear.
+
 Render interactive inline-markdown in a Blazor app.
 
 Lets you do this:
