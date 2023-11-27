@@ -1,15 +1,16 @@
-# MarkdownBlazor
+﻿# MarkdownBlazor
 
-> Very early beta stage; use with care/fear.
+> Very early beta stage; use with care/fear as appropriate. 💀
 
-Render interactive inline-markdown in a Blazor app.
+Render interactive inline-markdown in a Blazor app to create interactive docs that are easy to write. 
+Can run in Server or WebAssembly mode, and works with pre-rendering.
 
 Lets you do this:
 
 ```razor
 @page "/docs"
 
-<h1>Blazor Markdown Rendering</h1>
+<h2>This is html</h2>
 
 <Markdown>
 
@@ -26,23 +27,32 @@ Lets you do this:
 </Markdown>
 ```
 
+![Static content](assets/static-content-screenshot.png)
+
 Interactivity works (i.e. the output will update, in response to external changes).  
-I make *some* effort to emit sensible diffs to blazor so only the actual changed markdown elements propagate.
+
+> I make *some* effort to emit sensible diffs to blazor so only the actual changed 
+> markdown elements propagate, but there is a limit to how good that can be.
+
+> [!IMPORTANT] 
+> I'm *not* expecting people to start rendering big apps using markdown; however if you want a bit of interactivity in your docs,
+> this may be a nice way to do it. The server-side rendering in .NET 8 makes this actually viable.
+
 
 So you can also do this:
 
 ```razor
-@page "/docs"
-
-<h1>Interactive Blazor Markdown Rendering</h1>
+@page "/counter"
 
 <Markdown>
 
     # Our Value
 
-    @_counter
-            
+    Our value is currently @_counter.
+
 </Markdown>
+
+<button @onclick="CounterClicked">Click to increment @_counter</button>
 
 @code {
     int _counter = 0;
@@ -54,6 +64,8 @@ So you can also do this:
 }
 ```
 
+![Some interactivity](assets/interactivity.gif)
+
 Loops, conditionals and other code constructs inside the Markdown work as you might expect. 
 Because the razor parser doesn't expect literal text directly inside a for loop, you can use an empty element `<></>` to
 delineate, and I strip it from the output.
@@ -64,9 +76,7 @@ You can do markdown tables pretty nicely this way:
 @page "/todo"
 <h3>Todo</h3>
 
-<Markdown>
-    # Todo Items
-
+<Markdown>    
     | ID | Name | Due |
     | -- | ---- | --- |
     @foreach(var item in _sampleTodos)
@@ -91,6 +101,4 @@ You can do markdown tables pretty nicely this way:
 }
 ```
 
-> Please note, I'm *not* expecting people to start rendering big apps using markdown; however if you want a bit of interactivity in your docs...
-
-
+![loops](assets/loops-screenshot.png)

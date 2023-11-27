@@ -2,11 +2,9 @@
 <h3>Todo</h3>
 
 <Markdown>
-    # Todo Items
-
     | ID | Name | Due |
     | -- | ---- | --- |
-    @foreach(var item in _sampleTodos)
+    @foreach (var item in _sampleTodos)
     {
         <>
         | @item.Id | @item.Title | @item.DueBy |

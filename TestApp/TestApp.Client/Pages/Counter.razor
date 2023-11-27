@@ -1,0 +1,22 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+<Markdown>
+
+    ### Counter
+
+    Our value is currently @_counter.
+
+</Markdown>
+
+<button @onclick="CounterClicked">Click to increment @_counter</button>
+
+@code {
+    int _counter = 0;
+    string _quoteText = "";
+
+    void CounterClicked()
+    {
+        _counter++;
+    }
+}

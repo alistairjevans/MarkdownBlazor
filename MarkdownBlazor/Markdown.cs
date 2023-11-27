@@ -145,7 +145,7 @@ namespace MarkdownBlazor
                     }
 
                     // Remove extraneous whitespace from the end of the line.
-                    var lastIndexOfContent = thisFrameContent.AsSpan().LastIndexOfAnyExcept("\t\n\r ");
+                    var lastIndexOfContent = thisFrameContent.AsSpan().LastIndexOfAnyExcept("\t\n\r");
 
                     var startOfFrameContent = openBlockBuilder.Length - thisFrameContent.Length;
                                         
@@ -277,31 +277,60 @@ namespace MarkdownBlazor
 
         static string RemoveIndentationFromMultilineString(string input, ref int existingMin)
         {
-            var lines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            var lines = input.AsSpan().EnumerateLines();
 
-            var minIndentation = lines
-                .Where(line => !string.IsNullOrWhiteSpace(line))
-                .Select(line => line.Length - line.TrimStart().Length)
-                .Min();
+            var minIndentation = existingMin;
+            int lineCount = 0;
 
-            minIndentation = Math.Max(minIndentation, existingMin);
+            foreach (var line in lines)
+            {
+                lineCount++;
+
+                if (line.IsWhiteSpace())
+                {
+                    continue;
+                }
+
+                var thisIndent = line.IndexOfAnyExcept(" \t");
+
+                if (minIndentation == 0)
+                {
+                    minIndentation = thisIndent;
+                }
+            }
+
+            if (existingMin == 0)
+            {
+                existingMin = minIndentation;
+            }
 
             var sb = new StringBuilder();
+            var currentLine = 0;
 
-            for (int lineIdx = 0; lineIdx < lines.Length; lineIdx++)
+            foreach (var line in lines)
             {
-                string? line = lines[lineIdx];
-                if (string.IsNullOrWhiteSpace(line))
+                currentLine++;
+
+                if (line.IsWhiteSpace())
                 {
                     sb.AppendLine();
                 }
-                else if (lineIdx < lines.Length - 1)
-                {
-                    sb.AppendLine(line.Substring(minIndentation));
-                }
                 else
                 {
-                    sb.Append(line.Substring(minIndentation));
+                    // Find first index of the non-whitespace characters.
+                    var removePoint = line.IndexOfAnyExcept(" \t");
+
+                    if (removePoint > minIndentation)
+                    {
+                        removePoint -= minIndentation;
+                    }
+
+                    sb.Append(line.Slice(removePoint));
+
+                    if (currentLine < lineCount)
+                    {
+                        sb.Append('\n');
+                    }
                 }
             }
 
